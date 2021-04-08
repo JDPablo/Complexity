@@ -84,7 +84,7 @@ function FileBuilder()
 function traverseWithParents(object, visitor)
 {
     var key, child;
-
+	
     visitor.call(null, object);
 
     for (key in object) {
@@ -123,10 +123,49 @@ function complexity(filePath)
 			builder.StartLine    = node.loc.start.line;
 
 			builders[builder.FunctionName] = builder;
-		}
 
+			builder.ParameterCount = node.params.length;
+
+			var max = 0;
+
+			traverseWithParents(node, function(node){
+				if(isDecision(node)){
+					builder.SimpleCyclomaticComplexity += 1;
+
+					if(decisionCounter(node) > max){
+						max = decisionCounter(node);
+					}
+				}
+			});
+			builder.SimpleCyclomaticComplexity += 1;
+			builder.MaxConditions = max;
+			if(builder.MaxConditions > 1){
+				builder.MaxConditions++;
+			}
+		}
+		if(node.type === 'Literal'){
+            fileBuilder.Strings++;
+        }
 	});
 
+}
+
+function decisionCounter(node){
+	var max = 0;
+	ifStatement = false;
+
+	traverseWithParents(node, function(node){
+		if(node.type === 'IfStatement')
+			ifStatement = true;
+		if(node.type === 'LogicalExpression' && ((node.operator === '&&') || (node.operator === '||')))
+			max++;
+	});
+
+	if(max == 0 && ifStatement){
+		return 1;
+	}
+
+	return max;
 }
 
 // Helper function for counting children of node.
