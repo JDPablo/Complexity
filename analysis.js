@@ -118,12 +118,9 @@ function complexity(filePath)
 		if (node.type === 'FunctionDeclaration') 
 		{
 			var builder = new FunctionBuilder();
-
 			builder.FunctionName = functionName(node);
 			builder.StartLine    = node.loc.start.line;
-
 			builders[builder.FunctionName] = builder;
-
 			builder.ParameterCount = node.params.length;
 
 			var max = 0;
@@ -131,7 +128,6 @@ function complexity(filePath)
 			traverseWithParents(node, function(node){
 				if(isDecision(node)){
 					builder.SimpleCyclomaticComplexity += 1;
-
 					if(decisionCounter(node) > max){
 						max = decisionCounter(node);
 					}
