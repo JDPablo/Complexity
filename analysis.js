@@ -99,6 +99,8 @@ function traverseWithParents(object, visitor)
     }
 }
 
+
+
 function complexity(filePath)
 {
 	var buf = fs.readFileSync(filePath, "utf8");
@@ -112,6 +114,10 @@ function complexity(filePath)
 	fileBuilder.ImportCount = 0;
 	builders[filePath] = fileBuilder;
 
+	function getStrings(){
+		return fileBuilder.Strings;
+	}
+	exports.getStrings = getStrings;
 	// Tranverse program with a function visitor.
 	traverseWithParents(ast, function (node) 
 	{
